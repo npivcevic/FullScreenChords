@@ -40,8 +40,26 @@ function updateContent (textContent, fontSize, contentDiv) {
   // Add columns to the div
   columns.forEach(columnLines => {
     const columnDiv = document.createElement('div')
-    columnDiv.style.flex = '1'
+    columnDiv.style.flex = 'none' // Remove flex: 1 so width is controlled by minWidth
     columnDiv.style.marginRight = '20px'
+
+    // Measure the longest line in this column
+    let maxLineWidth = 0
+    const measureEl = document.createElement('span')
+    measureEl.style.fontFamily = '\'Roboto Mono\', \'Courier New\', monospace'
+    measureEl.style.fontSize = fontSize + 'px'
+    measureEl.style.visibility = 'hidden'
+    measureEl.style.whiteSpace = 'pre'
+    document.body.appendChild(measureEl)
+
+    columnLines.forEach(line => {
+      // Measure width of the line (strip HTML tags for chords)
+      measureEl.textContent = line === '' ? ' ' : line
+      const width = measureEl.getBoundingClientRect().width
+      if (width > maxLineWidth) maxLineWidth = width
+    })
+    document.body.removeChild(measureEl)
+    columnDiv.style.minWidth = Math.ceil(maxLineWidth) + 'px'
 
     columnLines.forEach(line => {
       const p = document.createElement('p')
@@ -143,9 +161,54 @@ function appendMainButton () {
     toggleContent();
   })
 
+  // Font size buttons
+  const fontControls = document.createElement('div')
+  fontControls.style.position = 'fixed'
+  fontControls.style.bottom = '80px'
+  fontControls.style.right = '20px'
+  fontControls.style.display = 'flex'
+  fontControls.style.flexDirection = 'column'
+  fontControls.style.gap = '10px'
+  fontControls.style.zIndex = '1001'
+
+  const plusBtn = document.createElement('button')
+  plusBtn.textContent = '+'
+  plusBtn.style.width = '40px'
+  plusBtn.style.height = '40px'
+  plusBtn.style.borderRadius = '50%'
+  plusBtn.style.border = 'none'
+  plusBtn.style.backgroundColor = '#28a745'
+  plusBtn.style.color = 'white'
+  plusBtn.style.fontSize = '24px'
+  plusBtn.style.cursor = 'pointer'
+  plusBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.08)'
+
+  const minusBtn = document.createElement('button')
+  minusBtn.textContent = '-'
+  minusBtn.style.width = '40px'
+  minusBtn.style.height = '40px'
+  minusBtn.style.borderRadius = '50%'
+  minusBtn.style.border = 'none'
+  minusBtn.style.backgroundColor = '#dc3545'
+  minusBtn.style.color = 'white'
+  minusBtn.style.fontSize = '24px'
+  minusBtn.style.cursor = 'pointer'
+  minusBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.08)'
+
+  plusBtn.addEventListener('click', () => {
+    currentFontSize = Math.min(currentFontSize + 2, 48)
+    if (isContentVisible) updateContent(chordsContent, currentFontSize, contentEl)
+  })
+  minusBtn.addEventListener('click', () => {
+    currentFontSize = Math.max(currentFontSize - 2, 8)
+    if (isContentVisible) updateContent(chordsContent, currentFontSize, contentEl)
+  })
+
+  fontControls.appendChild(plusBtn)
+  fontControls.appendChild(minusBtn)
+  document.body.appendChild(fontControls)
 
   document.body.appendChild(buttonEl)
-
 }
 
 function appendContent () {
@@ -163,7 +226,7 @@ function appendContent () {
   contentEl.style.overflow = 'auto'
   contentEl.style.whiteSpace = 'pre-wrap'
   contentEl.style.display = 'none'
-  contentEl.style.flexWrap = 'wrap'
+  // contentEl.style.flexWrap = 'wrap'
   contentEl.style.position = 'fixed'
   contentEl.style.top = '0'
   contentEl.style.left = '0'
