@@ -196,7 +196,7 @@ function appendMainButton () {
       alert('Chords not found on this page.')
       return
     }
-    chordsContent = targetElement.textContent;
+    chordsContent = chordsContent = targetElement.textContent.replace(/\nX$/, '');;
     toggleContent();
     // Toggle icon
     if (isContentVisible) {
