@@ -34,8 +34,23 @@ function updateContent (textContent, fontSize, contentDiv) {
 
   // Split lines into columns
   const columns = []
-  for (let i = 0; i < lines.length; i += maxLinesPerColumn) {
-    columns.push(lines.slice(i, i + maxLinesPerColumn))
+  let i = 0
+  while (i < lines.length) {
+    let end = i + maxLinesPerColumn
+    if (end >= lines.length) {
+      end = lines.length
+    } else if (isChordLine(lines[end - 1]) && end < lines.length) {
+      // If the last line in the column would be a chord line, move it to the next column
+      end--
+    }
+    let column = lines.slice(i, end)
+    // Skip the first line if it's blank
+    if (column.length > 0 && column[0].trim() === '') {
+      column = column.slice(1)
+      i++
+    }
+    columns.push(column)
+    i = end
   }
 
   // Add columns to the div
