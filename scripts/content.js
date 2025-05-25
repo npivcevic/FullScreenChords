@@ -129,8 +129,28 @@ function appendStyles () {
     .empty-line {
       color: transparent; /* Hide empty lines */
     }
+    .fullscreen-btn-icon {
+      font-size: 28px;
+      color: white;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      align-content: center;
+      width: 100%;
+      height: 100%;
+    }
   `
   document.head.appendChild(style)
+
+  // Add FontAwesome CDN if not already present
+  if (!document.getElementById('fa-cdn')) {
+    const fa = document.createElement('link')
+    fa.id = 'fa-cdn'
+    fa.rel = 'stylesheet'
+    fa.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css'
+    document.head.appendChild(fa)
+  }
 }
 
 function appendMainButton () {
@@ -143,12 +163,17 @@ function appendMainButton () {
   buttonEl.style.borderRadius = '50%'
   buttonEl.style.border = 'none'
   buttonEl.style.backgroundColor = '#007BFF'
-  buttonEl.style.backgroundImage = `url(${chrome.runtime.getURL('images/128.png')})`
-  buttonEl.style.backgroundSize = 'cover'
-  buttonEl.style.backgroundPosition = 'center'
   buttonEl.style.cursor = 'pointer'
   buttonEl.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)'
   buttonEl.style.zIndex = '1000'
+  buttonEl.style.display = 'flex'
+  buttonEl.style.alignItems = 'center'
+  buttonEl.style.justifyContent = 'center'
+
+  // Add FontAwesome icon
+  const icon = document.createElement('i')
+  icon.className = 'fas fa-expand fullscreen-btn-icon'
+  buttonEl.appendChild(icon)
 
   buttonEl.addEventListener('click', () => {
     const targetElement = document.querySelector('section code pre')
@@ -156,10 +181,14 @@ function appendMainButton () {
       alert('Chords not found on this page.')
       return
     }
-
     chordsContent = targetElement.textContent;
-
     toggleContent();
+    // Toggle icon
+    if (isContentVisible) {
+      icon.className = 'fas fa-compress fullscreen-btn-icon'
+    } else {
+      icon.className = 'fas fa-expand fullscreen-btn-icon'
+    }
   })
 
   // Font size buttons
@@ -270,5 +299,11 @@ function toggleContent() {
     contentEl.style.display = 'flex'
     if (fontControls) fontControls.style.display = 'flex'
     isContentVisible = true
+  }
+  // Toggle icon if buttonEl exists
+  if (buttonEl && buttonEl.firstChild) {
+    buttonEl.firstChild.className = isContentVisible
+      ? 'fas fa-compress fullscreen-btn-icon'
+      : 'fas fa-expand fullscreen-btn-icon'
   }
 }
