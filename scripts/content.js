@@ -245,11 +245,11 @@ function appendMainButton () {
   minusBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.08)'
 
   plusBtn.addEventListener('click', () => {
-    currentFontSize = Math.min(currentFontSize + 2, 48)
+    currentFontSize = Math.min(currentFontSize + 1, 48)
     if (isContentVisible) updateContent(chordsContent, currentFontSize, contentEl)
   })
   minusBtn.addEventListener('click', () => {
-    currentFontSize = Math.max(currentFontSize - 2, 8)
+    currentFontSize = Math.max(currentFontSize - 1, 8)
     if (isContentVisible) updateContent(chordsContent, currentFontSize, contentEl)
   })
 
