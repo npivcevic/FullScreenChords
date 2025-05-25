@@ -1,6 +1,73 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FullScreen Chords Extension</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+      background: #f7f9fa;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      /*min-height: 100vh;*/
+      width: 300px;
+    }
+    .container {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      padding: 32px 28px 24px 28px;
+      max-width: 420px;
+      text-align: center;
+    }
+    h1 {
+      color: #007BFF;
+      margin-bottom: 12px;
+      font-size: 2rem;
+      letter-spacing: 1px;
+    }
+    .desc {
+      color: #333;
+      font-size: 1.1rem;
+      margin-bottom: 18px;
+      text-align: left;
+    }
+    .icon {
+      font-size: 3rem;
+      color: #007BFF;
+      margin-bottom: 18px;
+    }
+    .footer {
+      margin-top: 18px;
+      color: #888;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
 <body>
-<h1>Hello Extensions</h1>
-<script src="scripts/popup.js"></script>
+  <div class="container">
+    <div class="icon"><i class="fas fa-expand"></i></div>
+    <h1>FullScreen Chords</h1>
+    <div class="desc">
+      This extension lets you view, resize, and organize song chords in a clean, full-screen layout.<br><br>
+      <b>Features:</b>
+      <ul style="text-align:left; margin: 12px 0 0 0; color:#444; font-size:1rem;">
+        <li>Display chords in columns, always readable</li>
+        <li>Adjust font size with + and - controls</li>
+        <li>Prevents awkward line wrapping</li>
+        <li>Easy toggle with a floating fullscreen button</li>
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; 2025 FullScreen Chords Extension
+    </div>
+  </div>
+  <script src="scripts/popup.js"></script>
 </body>
 </html>
