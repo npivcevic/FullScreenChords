@@ -1,5 +1,6 @@
 let buttonEl;
 let contentEl;
+let fontControls; // Make fontControls accessible globally
 let isContentVisible = false;
 
 let chordsContent = '';
@@ -162,7 +163,7 @@ function appendMainButton () {
   })
 
   // Font size buttons
-  const fontControls = document.createElement('div')
+  fontControls = document.createElement('div')
   fontControls.style.position = 'fixed'
   fontControls.style.bottom = '80px'
   fontControls.style.right = '20px'
@@ -170,6 +171,7 @@ function appendMainButton () {
   fontControls.style.flexDirection = 'column'
   fontControls.style.gap = '10px'
   fontControls.style.zIndex = '1001'
+  fontControls.style.display = 'none' // Hide by default
 
   const plusBtn = document.createElement('button')
   plusBtn.textContent = '+'
@@ -257,6 +259,7 @@ function calcLineHeight (fontSize) {
 function toggleContent() {
   if (isContentVisible) {
     contentEl.style.display = 'none'
+    if (fontControls) fontControls.style.display = 'none'
     isContentVisible = false
   } else {
     if (chordsContent) {
@@ -265,6 +268,7 @@ function toggleContent() {
       alert('No chords content available.')
     }
     contentEl.style.display = 'flex'
+    if (fontControls) fontControls.style.display = 'flex'
     isContentVisible = true
   }
 }
