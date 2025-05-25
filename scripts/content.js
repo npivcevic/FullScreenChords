@@ -54,10 +54,13 @@ function updateContent (textContent, fontSize, contentDiv) {
   }
 
   // Add columns to the div
-  columns.forEach(columnLines => {
+  columns.forEach((columnLines, idx) => {
     const columnDiv = document.createElement('div')
     columnDiv.style.flex = 'none' // Remove flex: 1 so width is controlled by minWidth
     columnDiv.style.marginRight = '20px'
+    if (idx !== columns.length - 1) {
+      columnDiv.style.borderRight = '1px solid #e0e0e0'
+    }
 
     // Measure the longest line in this column
     let maxLineWidth = 0
