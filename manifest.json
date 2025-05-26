@@ -1,6 +1,6 @@
 {
   "name": "Full Screen Chords Extension",
-  "description": "Base Level Extension",
+  "description": "View chords in fullscreen mode",
   "version": "1.0",
   "manifest_version": 3,
   "icons": {
@@ -10,7 +10,7 @@
     "128": "images/128.png"
   },
   "action": {
-    "default_popup": "hello.html",
+    "default_popup": "index.html",
     "default_icon": "images/128.png"
   },
   "content_scripts": [
