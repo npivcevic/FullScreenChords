@@ -27,10 +27,12 @@ function updateContent (textContent, fontSize, contentDiv) {
   }
 
   const lineHeight = calcLineHeight(fontSize)
-
-  // Calculate the number of lines that fit in the available screen height
   const availableHeight = window.innerHeight - 20 // Subtract padding/margin
   const maxLinesPerColumn = Math.floor(availableHeight / lineHeight)
+
+  // Find the first chord line index
+  let firstChordIdx = lines.findIndex(isChordLine)
+  if (firstChordIdx === -1) firstChordIdx = 0
 
   // Split lines into columns
   const columns = []
@@ -40,7 +42,6 @@ function updateContent (textContent, fontSize, contentDiv) {
     if (end >= lines.length) {
       end = lines.length
     } else if (isChordLine(lines[end - 1]) && end < lines.length) {
-      // If the last line in the column would be a chord line, move it to the next column
       end--
     }
     let column = lines.slice(i, end)
@@ -53,51 +54,76 @@ function updateContent (textContent, fontSize, contentDiv) {
     i = end
   }
 
-  // Add columns to the div
   columns.forEach((columnLines, idx) => {
     const columnDiv = document.createElement('div')
-    columnDiv.style.flex = 'none' // Remove flex: 1 so width is controlled by minWidth
+    columnDiv.style.flex = 'none'
     columnDiv.style.marginRight = '20px'
     if (idx !== columns.length - 1) {
       columnDiv.style.borderRight = '1px solid #e0e0e0'
     }
 
-    // Measure the longest line in this column
+    // For the first column, measure width only from first chord line onward
     let maxLineWidth = 0
-    const measureEl = document.createElement('span')
-    measureEl.style.fontFamily = '\'Roboto Mono\', \'Courier New\', monospace'
-    measureEl.style.fontSize = fontSize + 'px'
-    measureEl.style.visibility = 'hidden'
-    measureEl.style.whiteSpace = 'pre'
-    document.body.appendChild(measureEl)
-
-    columnLines.forEach(line => {
-      // Measure width of the line (strip HTML tags for chords)
-      measureEl.textContent = line === '' ? ' ' : line
-      const width = measureEl.getBoundingClientRect().width
-      if (width > maxLineWidth) maxLineWidth = width
-    })
-    document.body.removeChild(measureEl)
+    if (idx === 0) {
+      const measureEl = document.createElement('span')
+      measureEl.style.fontFamily = '\'Roboto Mono\', \'Courier New\', monospace'
+      measureEl.style.fontSize = fontSize + 'px'
+      measureEl.style.visibility = 'hidden'
+      measureEl.style.whiteSpace = 'pre'
+      document.body.appendChild(measureEl)
+      let foundChord = false
+      columnLines.forEach((line, lineIdx) => {
+        if (!foundChord && isChordLine(line)) foundChord = true
+        if (foundChord) {
+          measureEl.textContent = line === '' ? ' ' : line
+          const width = measureEl.getBoundingClientRect().width
+          if (width > maxLineWidth) maxLineWidth = width
+        }
+      })
+      document.body.removeChild(measureEl)
+    } else {
+      // For other columns, measure all lines
+      const measureEl = document.createElement('span')
+      measureEl.style.fontFamily = '\'Roboto Mono\', \'Courier New\', monospace'
+      measureEl.style.fontSize = fontSize + 'px'
+      measureEl.style.visibility = 'hidden'
+      measureEl.style.whiteSpace = 'pre'
+      document.body.appendChild(measureEl)
+      columnLines.forEach(line => {
+        measureEl.textContent = line === '' ? ' ' : line
+        const width = measureEl.getBoundingClientRect().width
+        if (width > maxLineWidth) maxLineWidth = width
+      })
+      document.body.removeChild(measureEl)
+    }
     columnDiv.style.minWidth = Math.ceil(maxLineWidth) + 'px'
 
-    columnLines.forEach(line => {
+    let foundChord = false
+    columnLines.forEach((line, lineIdx) => {
       const p = document.createElement('p')
       p.style.margin = '0'
       p.style.padding = '0'
-
-      if (line.trim() === '') {
-        p.className = 'empty-line'
-        p.innerHTML = '&nbsp;' // Non-breaking space for empty lines
+      if (idx === 0 && !foundChord && isChordLine(line)) foundChord = true
+      if (idx === 0 && !foundChord) {
+        // Description lines: allow wrapping, set maxWidth to column width
+        p.style.whiteSpace = 'pre-wrap'
+        p.style.fontFamily = 'inherit'
+        p.style.wordBreak = 'break-word'
+        p.style.overflowWrap = 'break-word'
+        p.style.maxWidth = Math.ceil(maxLineWidth) + 'px'
+        p.innerHTML = encodeHtml(line)
       } else {
-        p.innerHTML = spanifyChords(line) // Use spanifyChords to style chords
+        if (line.trim() === '') {
+          p.className = 'empty-line'
+          p.innerHTML = '&nbsp;'
+        } else {
+          p.innerHTML = spanifyChords(line)
+        }
       }
-
       columnDiv.appendChild(p)
     })
-
     contentDiv.appendChild(columnDiv)
   })
-
   contentEl.style.display = 'flex'
   contentEl.style.fontSize = currentFontSize + 'px'
 }
