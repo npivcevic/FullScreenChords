@@ -17,7 +17,8 @@
     {
       "js": ["scripts/content.js"],
       "matches": [
-        "https://tabs.ultimate-guitar.com/tab/*"
+        "https://tabs.ultimate-guitar.com/tab/*",
+        "https://tabs.ultimate-guitar.com/user/tab/*"
       ]
     }
   ]
