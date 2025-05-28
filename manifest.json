@@ -1,7 +1,7 @@
 {
   "name": "Full Screen Chords Extension",
   "description": "View chords in fullscreen mode",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "manifest_version": 3,
   "icons": {
     "16": "images/16.png",
