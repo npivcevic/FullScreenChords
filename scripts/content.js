@@ -9,6 +9,7 @@ let currentFontSize = 14;
 appendContent();
 appendStyles()
 appendMainButton()
+addResizeListener();
 
 const rgx = {
   chord: /(?<chord>(^|(?<=[\s|()-]))(?<root>C|C#|Db|D|D#|Eb|E|F|F#|Gb|G|G#|Ab|A|A#|Bb|B)(?<variant>m|maj|min|dim|aug|sus|sus2|sus4|7sus|7sus2|7sus4|add9|add11|madd9|madd11|M|m6|m7|min6|min7|min11|maj7|maj9|mmaj7|mmaj9|7|9|11|13|6|2|4|5|°|ø|♭5|#5|b5|#9|b9)?(?:\/(?<bass>C|C#|Db|D|D#|Eb|E|F|F#|Gb|G|G#|Ab|A|A#|Bb|B))?($|(?=[\s|()-*])))/,
@@ -350,4 +351,12 @@ function toggleContent() {
       ? 'fas fa-compress fullscreen-btn-icon'
       : 'fas fa-expand fullscreen-btn-icon'
   }
+}
+
+function addResizeListener() {
+  window.addEventListener('resize', () => {
+    if (!isContentVisible) return;
+    updateContent(chordsContent, currentFontSize, contentEl);
+  });
+
 }
