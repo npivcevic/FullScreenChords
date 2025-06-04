@@ -113,7 +113,7 @@ function updateContent (textContent, fontSize, contentDiv) {
         p.style.wordBreak = 'break-word'
         p.style.overflowWrap = 'break-word'
         p.style.maxWidth = Math.ceil(maxLineWidth) + 'px'
-        p.innerHTML = encodeHtml(line)
+        p.innerHTML = spanifyChords(line)
       } else {
         if (line.trim() === '') {
           p.className = 'empty-line'
@@ -140,6 +140,10 @@ function spanifyChords (line) {
   const chordRegexGlobal = new RegExp(rgx.chord.source, 'g')
 
   line = encodeHtml(line)
+
+  // Highlight section headers like [Intro], [Chorus], etc.
+  const sectionHeaderRegex = /\[[^\]]+\]/g;
+  line = line.replace(sectionHeaderRegex, match => `<span class="section-header">${match}</span>`);
 
   const match = line.match(chordRegexGlobal)
   if (!match) {
@@ -171,6 +175,9 @@ function appendStyles () {
       background-color: #f0f8ff;
       padding: 2px 4px;
       border-radius: 3px;
+    }
+    .section-header {
+      font-weight: 700;
     }
     .empty-line {
       color: transparent; /* Hide empty lines */
