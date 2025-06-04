@@ -21,5 +21,15 @@
         "https://tabs.ultimate-guitar.com/user/tab/*"
       ]
     }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "scripts/content.css"
+      ],
+      "matches": [
+        "https://tabs.ultimate-guitar.com/*"
+      ]
+    }
   ]
 }
