@@ -267,8 +267,11 @@ function handlePClick(event) {
   event.stopPropagation();
   const p = event.currentTarget;
   if (p.classList.contains('fsc-hidden')) return;
-  p.classList.toggle('fsc-selected');
-  updateHideButton();
+  // Only toggle selection if not dragging
+  if (!handlePClick._dragging) {
+    p.classList.toggle('fsc-selected');
+    updateHideButton();
+  }
 }
 
 function updateHideButton() {
@@ -303,6 +306,7 @@ function initializeSelection(contentDiv) {
     if (e.button !== 0) return;
     if (this.classList.contains('fsc-hidden')) return;
     isDragging = true;
+    handlePClick._dragging = true;
     dragStart = ps.indexOf(this);
     dragEnd = dragStart;
     clearSelection();
@@ -328,6 +332,7 @@ function initializeSelection(contentDiv) {
   function handlePMouseUp(e) {
     if (!isDragging) return;
     isDragging = false;
+    setTimeout(() => { handlePClick._dragging = false; }, 0);
     dragStart = null;
     dragEnd = null;
     updateHideButton();
