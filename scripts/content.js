@@ -282,12 +282,57 @@ function clearSelection() {
 }
 
 function initializeSelection(contentDiv) {
-  contentDiv.querySelectorAll('p').forEach(p => {
+  let isDragging = false;
+  let dragStart = null;
+  let dragEnd = null;
+  const ps = Array.from(contentDiv.querySelectorAll('p'));
+  ps.forEach(p => {
     p.style.userSelect = 'none';
     p.style.cursor = 'pointer';
     p.removeEventListener('click', handlePClick);
     p.addEventListener('click', handlePClick);
+    p.removeEventListener('mousedown', handlePMouseDown);
+    p.addEventListener('mousedown', handlePMouseDown);
   });
+  contentDiv.removeEventListener('mousemove', handlePMouseMove);
+  contentDiv.addEventListener('mousemove', handlePMouseMove);
+  document.removeEventListener('mouseup', handlePMouseUp);
+  document.addEventListener('mouseup', handlePMouseUp);
+
+  function handlePMouseDown(e) {
+    if (e.button !== 0) return;
+    if (this.classList.contains('fsc-hidden')) return;
+    isDragging = true;
+    dragStart = ps.indexOf(this);
+    dragEnd = dragStart;
+    clearSelection();
+    this.classList.add('fsc-selected');
+    updateHideButton();
+    e.preventDefault();
+  }
+
+  function handlePMouseMove(e) {
+    if (!isDragging) return;
+    const target = e.target.closest('p');
+    if (!target || target.classList.contains('fsc-hidden')) return;
+    dragEnd = ps.indexOf(target);
+    if (dragStart === -1 || dragEnd === -1) return;
+    const [from, to] = [dragStart, dragEnd].sort((a, b) => a - b);
+    clearSelection();
+    for (let i = from; i <= to; i++) {
+      ps[i].classList.add('fsc-selected');
+    }
+    updateHideButton();
+  }
+
+  function handlePMouseUp(e) {
+    if (!isDragging) return;
+    isDragging = false;
+    dragStart = null;
+    dragEnd = null;
+    updateHideButton();
+  }
+
   updateHideButton();
 }
 
