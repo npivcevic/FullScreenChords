@@ -263,15 +263,35 @@ function addResizeListener() {
   });
 }
 // define helper functions for selection and hiding
+function handleContentClick(e) {
+  // Only handle clicks not on a p element
+  if (e.target.tagName.toLowerCase() !== 'p') {
+    clearSelection();
+  }
+}
+
 function handlePClick(event) {
   event.stopPropagation();
   const p = event.currentTarget;
   if (p.classList.contains('fsc-hidden')) return;
-  // Only toggle selection if not dragging
-  if (!handlePClick._dragging) {
-    p.classList.toggle('fsc-selected');
+  const selected = contentEl.querySelectorAll('p.fsc-selected');
+  // If multiple are selected, clear all and select just this one
+  if (selected.length > 1) {
+    clearSelection();
+    p.classList.add('fsc-selected');
     updateHideButton();
+    return;
   }
+  // If only this one is selected, unselect it
+  if (selected.length === 1 && selected[0] === p) {
+    p.classList.remove('fsc-selected');
+    updateHideButton();
+    return;
+  }
+  // Otherwise, select just this one
+  clearSelection();
+  p.classList.add('fsc-selected');
+  updateHideButton();
 }
 
 function updateHideButton() {
@@ -308,6 +328,7 @@ function initializeSelection(contentDiv) {
   let isDragging = false;
   let dragStart = null;
   let dragEnd = null;
+  let mouseMoved = false;
   const ps = Array.from(contentDiv.querySelectorAll('p'));
   ps.forEach(p => {
     p.style.userSelect = 'none';
@@ -326,17 +347,19 @@ function initializeSelection(contentDiv) {
     if (e.button !== 0) return;
     if (this.classList.contains('fsc-hidden')) return;
     isDragging = true;
-    handlePClick._dragging = true;
+    mouseMoved = false;
+    handlePClick._dragging = false;
     dragStart = ps.indexOf(this);
     dragEnd = dragStart;
-    clearSelection();
-    this.classList.add('fsc-selected');
-    updateHideButton();
+    // Don't clearSelection here, let click handle single selection
+    // Only select on drag
     e.preventDefault();
   }
 
   function handlePMouseMove(e) {
     if (!isDragging) return;
+    mouseMoved = true;
+    handlePClick._dragging = true;
     const target = e.target.closest('p');
     if (!target || target.classList.contains('fsc-hidden')) return;
     dragEnd = ps.indexOf(target);
