@@ -124,6 +124,7 @@ function toggleContent() {
     contentEl.classList.remove('fsc-visible');
     if (fontControls) fontControls.classList.remove('fsc-visible');
     isContentVisible = false;
+    if (hideButtonEl) hideButtonEl.classList.remove('fsc-visible'); // Hide hide button when closing fullscreen
   } else {
     if (chordsContent) {
       updateContent(chordsContent, currentFontSize, contentEl);
