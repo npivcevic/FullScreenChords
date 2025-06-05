@@ -44,6 +44,7 @@ function appendStyles() {
 function createButton() {
   const btn = document.createElement('button');
   btn.className = 'fsc-main-btn';
+  btn.title = 'Toggle fullscreen (F)'; // Tooltip with shortcut
   const icon = document.createElement('i');
   icon.className = 'fas fa-expand fsc-fullscreen-btn-icon';
   btn.appendChild(icon);
@@ -56,9 +57,11 @@ function createFontControls() {
   const plusBtn = document.createElement('button');
   plusBtn.textContent = '+';
   plusBtn.className = 'fsc-font-btn fsc-plus';
+  plusBtn.title = 'Increase font size (+)'; // Tooltip with shortcut
   const minusBtn = document.createElement('button');
   minusBtn.textContent = '-';
   minusBtn.className = 'fsc-font-btn fsc-minus';
+  minusBtn.title = 'Decrease font size (-)'; // Tooltip with shortcut
   controls.appendChild(plusBtn);
   controls.appendChild(minusBtn);
   return { controls, plusBtn, minusBtn };
@@ -386,8 +389,9 @@ function initializeSelection(contentDiv) {
 
 function appendHideButton() {
   hideButtonEl = document.createElement('button');
-  hideButtonEl.textContent = 'Hide';
   hideButtonEl.className = 'fsc-hide-btn';
+  hideButtonEl.textContent = 'Hide';
+  hideButtonEl.title = 'Close fullscreen (Esc)'; // Tooltip with shortcut
   hideButtonEl.addEventListener('click', () => {
     // Get all selected <p> elements
     const selectedPs = Array.from(contentEl.querySelectorAll('p.fsc-selected'));
@@ -412,3 +416,27 @@ function appendHideButton() {
   });
   document.body.appendChild(hideButtonEl);
 }
+
+// Keyboard shortcuts
+window.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
+  if (e.key === 'Escape') {
+    if (isContentVisible) toggleContent();
+  } else if (e.key.toLowerCase() === 'f') {
+    const targetElement = document.querySelector('section code pre');
+    if (!isContentVisible && targetElement) {
+      chordsContent = targetElement.textContent.replace(/\nX$/, '');
+    }
+    toggleContent();
+    const icon = buttonEl.firstChild;
+    icon.className = isContentVisible
+      ? 'fas fa-compress fsc-fullscreen-btn-icon'
+      : 'fas fa-expand fsc-fullscreen-btn-icon';
+  } else if (e.key === '+') {
+    currentFontSize = Math.min(currentFontSize + 0.5, 48);
+    if (isContentVisible) updateContent(chordsContent, currentFontSize, contentEl);
+  } else if (e.key === '-' || e.key === '_') {
+    currentFontSize = Math.max(currentFontSize - 0.5, 8);
+    if (isContentVisible) updateContent(chordsContent, currentFontSize, contentEl);
+  }
+});
