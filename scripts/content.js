@@ -341,8 +341,26 @@ function appendHideButton() {
   hideButtonEl.textContent = 'Hide';
   hideButtonEl.className = 'fsc-hide-btn';
   hideButtonEl.addEventListener('click', () => {
-    contentEl.querySelectorAll('p.fsc-selected').forEach(p => p.classList.add('fsc-hidden'));
+    // Get all selected <p> elements
+    const selectedPs = Array.from(contentEl.querySelectorAll('p.fsc-selected'));
+    // Get their text content (trimmed, as in updateContent)
+    const selectedLines = selectedPs.map(p => p.textContent.trimEnd());
+    // Remove those lines from chordsContent
+    let lines = chordsContent.split('\n');
+    // Remove all selected lines (may be duplicates, so remove by index)
+    // Build a set of indices to remove
+    let indicesToRemove = new Set();
+    selectedLines.forEach(selLine => {
+      lines.forEach((line, idx) => {
+        if (!indicesToRemove.has(idx) && line.trimEnd() === selLine) {
+          indicesToRemove.add(idx);
+        }
+      });
+    });
+    // Remove by index
+    chordsContent = lines.filter((_, idx) => !indicesToRemove.has(idx)).join('\n');
     clearSelection();
+    updateContent(chordsContent, currentFontSize, contentEl);
   });
   document.body.appendChild(hideButtonEl);
 }
