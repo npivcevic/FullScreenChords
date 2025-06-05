@@ -84,11 +84,11 @@ function appendMainButton() {
   const { controls, plusBtn, minusBtn } = createFontControls();
   fontControls = controls;
   plusBtn.addEventListener('click', () => {
-    currentFontSize = Math.min(currentFontSize + 1, 48);
+    currentFontSize = Math.min(currentFontSize + 0.5, 48);
     if (isContentVisible) updateContent(chordsContent, currentFontSize, contentEl);
   });
   minusBtn.addEventListener('click', () => {
-    currentFontSize = Math.max(currentFontSize - 1, 8);
+    currentFontSize = Math.max(currentFontSize - 0.5, 8);
     if (isContentVisible) updateContent(chordsContent, currentFontSize, contentEl);
   });
   document.body.appendChild(fontControls);
