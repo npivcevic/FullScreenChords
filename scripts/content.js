@@ -275,8 +275,28 @@ function handlePClick(event) {
 }
 
 function updateHideButton() {
-  const anySelected = contentEl.querySelectorAll('p.fsc-selected').length > 0;
-  if (anySelected) hideButtonEl.classList.add('fsc-visible'); else hideButtonEl.classList.remove('fsc-visible');
+  const selected = contentEl.querySelectorAll('p.fsc-selected');
+  if (selected.length > 0) {
+    hideButtonEl.classList.add('fsc-visible');
+    // Position the button next to the first selected element
+    const first = selected[0];
+    const rect = first.getBoundingClientRect();
+    // Place the button to the right of the selected line, vertically centered
+    hideButtonEl.style.position = 'fixed';
+    hideButtonEl.style.top = `${rect.top + rect.height / 2 - hideButtonEl.offsetHeight / 2}px`;
+    hideButtonEl.style.left = `${rect.right + 12}px`;
+    hideButtonEl.style.bottom = '';
+    hideButtonEl.style.right = '';
+    hideButtonEl.style.zIndex = 2000;
+  } else {
+    hideButtonEl.classList.remove('fsc-visible');
+    // Reset to default position (off-screen)
+    hideButtonEl.style.top = '';
+    hideButtonEl.style.left = '';
+    hideButtonEl.style.bottom = '140px';
+    hideButtonEl.style.right = '20px';
+    hideButtonEl.style.zIndex = '';
+  }
 }
 
 function clearSelection() {
