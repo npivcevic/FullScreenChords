@@ -5,10 +5,12 @@ let isContentVisible = false;
 
 let chordsContent = '';
 let currentFontSize = 14;
+let hideButtonEl;
 
 appendContent();
 appendStyles();
 appendMainButton();
+appendHideButton();
 addResizeListener();
 
 const rgx = {
@@ -223,6 +225,8 @@ function updateContent(textContent, fontSize, contentDiv) {
     });
     contentDiv.appendChild(columnDiv);
   });
+  // initialize p-element selection and hide button visibility
+  initializeSelection(contentDiv);
   contentEl.style.fontSize = currentFontSize + 'px';
 }
 
@@ -257,4 +261,43 @@ function addResizeListener() {
     if (!isContentVisible) return;
     updateContent(chordsContent, currentFontSize, contentEl);
   });
+}
+// define helper functions for selection and hiding
+function handlePClick(event) {
+  event.stopPropagation();
+  const p = event.currentTarget;
+  if (p.classList.contains('fsc-hidden')) return;
+  p.classList.toggle('fsc-selected');
+  updateHideButton();
+}
+
+function updateHideButton() {
+  const anySelected = contentEl.querySelectorAll('p.fsc-selected').length > 0;
+  if (anySelected) hideButtonEl.classList.add('fsc-visible'); else hideButtonEl.classList.remove('fsc-visible');
+}
+
+function clearSelection() {
+  contentEl.querySelectorAll('p.fsc-selected').forEach(p => p.classList.remove('fsc-selected'));
+  updateHideButton();
+}
+
+function initializeSelection(contentDiv) {
+  contentDiv.querySelectorAll('p').forEach(p => {
+    p.style.userSelect = 'none';
+    p.style.cursor = 'pointer';
+    p.removeEventListener('click', handlePClick);
+    p.addEventListener('click', handlePClick);
+  });
+  updateHideButton();
+}
+
+function appendHideButton() {
+  hideButtonEl = document.createElement('button');
+  hideButtonEl.textContent = 'Hide';
+  hideButtonEl.className = 'fsc-hide-btn';
+  hideButtonEl.addEventListener('click', () => {
+    contentEl.querySelectorAll('p.fsc-selected').forEach(p => p.classList.add('fsc-hidden'));
+    clearSelection();
+  });
+  document.body.appendChild(hideButtonEl);
 }
